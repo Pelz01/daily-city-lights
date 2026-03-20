@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>City Lights</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: #0a0a0f;
+      color: #f0f0f5;
+      min-height: 100vh;
+    }
+    #root { min-height: 100vh; }
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: 
+        radial-gradient(ellipse at top, #1a1a2e 0%, transparent 50%),
+        radial-gradient(ellipse at bottom, #16213e 0%, transparent 50%),
+        #0a0a0f;
+    }
+    h1 {
+      font-size: clamp(2.5rem, 8vw, 6rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #f72585, #4cc9f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-top: 2rem;
+      min-width: 300px;
+    }
+    .card h2 {
+      font-size: 1rem;
+      opacity: 0.6;
+      margin-bottom: 1rem;
+    }
+    .counter {
+      font-size: 4rem;
+      font-weight: 800;
+      text-align: center;
+      color: #4cc9f0;
+    }
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    button {
+      flex: 1;
+      background: linear-gradient(135deg, #f72585, #b5179e);
+      border: none;
+      color: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(247, 37, 133, 0.5);
+    }
+    button.secondary {
+      background: rgba(255,255,255,0.1);
+    }
+    button.secondary:hover {
+      background: rgba(255,255,255,0.2);
+      box-shadow: none;
+    }
+    .todo-list {
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .todo-item input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+    .todo-item.completed {
+      opacity: 0.5;
+      text-decoration: line-through;
+    }
+    .todo-input {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .todo-input input {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      font-family: inherit;
+    }
+    .todo-input button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    
+    function App() {
+      const [count, setCount] = useState(0);
+      const [todos, setTodos] = useState([
+        { id: 1, text: 'Try the counter above', done: false },
+        { id: 2, text: 'Add your own todos', done: false },
+        { id: 3, text: 'Build something cool today', done: true },
+      ]);
+      const [newTodo, setNewTodo] = useState('');
+      
+      const addTodo = () => {
+        if (newTodo.trim()) {
+          setTodos([...todos, { id: Date.now(), text: newTodo, done: false }]);
+          setNewTodo('');
+        }
+      };
+      
+      const toggleTodo = (id) => {
+        setTodos(todos.map(t => t.id === id ? { ...t, done: !t.done } : t));
+      };
+      
+      const deleteTodo = (id) => {
+        setTodos(todos.filter(t => t.id !== id));
+      };
+      
+      return (
+        <div className="app">
+          <h1>City Lights</h1>
+          
+          <div className="card">
+            <h2>Interactive Counter</h2>
+            <div className="counter">{count}</div>
+            <div className="btn-group">
+              <button onClick={() => setCount(c => c - 1)}>−</button>
+              <button className="secondary" onClick={() => setCount(0)}>Reset</button>
+              <button onClick={() => setCount(c => c + 1)}>+</button>
+            </div>
+          </div>
+          
+          <div className="card">
+            <h2>Todo List</h2>
+            <div className="todo-list">
+              {todos.map(todo => (
+                <div key={todo.id} className={`todo-item ${todo.done ? 'completed' : ''}`}>
+                  <input 
+                    type="checkbox" 
+                    checked={todo.done} 
+                    onChange={() => toggleTodo(todo.id)}
+                  />
+                  <span style={{flex: 1}}>{todo.text}</span>
+                  <button 
+                    onClick={() => deleteTodo(todo.id)}
+                    style={{padding: '0.25rem 0.5rem', fontSize: '0.75rem', background: '#f85149'}}
+                  >✕</button>
+                </div>
+              ))}
+            </div>
+            <div className="todo-input">
+              <input 
+                type="text" 
+                placeholder="Add a todo..."
+                value={newTodo}
+                onChange={(e) => setNewTodo(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && addTodo()}
+              />
+              <button onClick={addTodo}>Add</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
